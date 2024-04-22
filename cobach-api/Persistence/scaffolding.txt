@@ -1,0 +1,4 @@
+﻿/*comando a ejectuar*/
+/**/
+
+Scaffold-DbContext "Server=sql.cobachbcs.edu.mx;Database=siia;TrustServerCertificate=True;user id=siia;password=S11@2021;" Microsoft.EntityFrameworkCore.SqlServer -ContextDir "Persistence" -OutputDir "Persistence/Models" -t Empleados,InformacionLaboral,Documentos,TurnosxCentrosDeTrabajo,CentrosDeTrabajo,CMCatalogoProyectos,catalogoPlazasAdministrativas,Nacionalidad,EntidadFederativa,EstadoCivil,TipoSangre,Localidad,CamposDisciplinares,NivelEstudio,FATransacciones,FARegistro,FAAcumulados,FABeneficiarios,FAPrestamos,FACuentasBancarias,TiposDocumento -f
