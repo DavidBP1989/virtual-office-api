@@ -29,5 +29,12 @@ namespace cobach_api.Features.Documentos
             var req = new ArchivosPorFolder.Request(folderId);
             return Ok(await _mediator.Send(req));
         }
+
+        [HttpGet("archivo")]
+        public async Task<IActionResult> ObtenerArchivo(string fileId, string size = "")
+        {
+            var req = new Archivo.Request(fileId, size);
+            return Ok(await _mediator.Send(req));
+        }
     }
 }
