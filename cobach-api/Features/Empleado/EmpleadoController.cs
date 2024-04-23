@@ -35,5 +35,12 @@ namespace cobach_api.Features.Empleado
             var req = new FondoAhorro.Request();
             return Ok(await _mediator.Send(req));
         }
+
+        [HttpGet("centros-trabajo")]
+        public async Task<IActionResult> CentrosTrabajo()
+        {
+            var req = new CentrosTrabajo.Request();
+            return Ok(await _mediator.Send(req));
+        }
     }
 }
