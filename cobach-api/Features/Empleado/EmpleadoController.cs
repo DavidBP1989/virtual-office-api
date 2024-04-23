@@ -42,5 +42,11 @@ namespace cobach_api.Features.Empleado
             var req = new CentrosTrabajo.Request();
             return Ok(await _mediator.Send(req));
         }
+
+        [HttpPost("cambiar-contrasena")]
+        public async Task<IActionResult> CambiarContrasena([FromBody] CambiarContrasena.Request request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
     }
 }
