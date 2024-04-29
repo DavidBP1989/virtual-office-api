@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using cobach_api.Features.Seguridad;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,12 @@ namespace cobach_api.Features.Permisos
         {
             var req = new CorteTiempo.Request();
             return Ok(await _mediator.Send(req));
+        }
+
+        [HttpPost("crear-corte-tiempo")]
+        public async Task<IActionResult> crearCortedeTiempo([FromBody] CorteTiempoAgregar.Request request)
+        {
+            return Ok(await _mediator.Send(request));
         }
     }
 }

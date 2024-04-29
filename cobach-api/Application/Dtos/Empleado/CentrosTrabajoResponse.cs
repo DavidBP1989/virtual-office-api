@@ -3,6 +3,7 @@
     public class CentrosTrabajoResponse
     {
         public int CentroDeTrabajoId { get; set; }
+        public int TurnoxCentroDeTrabajoId { get; set; }
         public string Clave { get; set; }
         public string Nombre { get; set; }
         public string Localidad { get; set; }

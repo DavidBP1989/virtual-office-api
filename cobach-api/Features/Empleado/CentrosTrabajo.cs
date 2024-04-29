@@ -25,18 +25,29 @@ namespace cobach_api.Features.Empleado
             }
             public async Task<ApiResponse<List<Response>>> Handle(Request request, CancellationToken cancellationToken)
             {
-                var centrosid = await _context.InformacionLaborals.Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) && x.Status == 1)
-                    .Select(s => s.TurnoxCentroDeTrabajo.CentroDeTrabajoId)
-                    .ToListAsync(cancellationToken: cancellationToken);
-
-                var res = await _context.CentrosDeTrabajos.Where(w => centrosid.Contains(w.CentroDeTrabajoId)).Select(s => new Response
-                {
-                    CentroDeTrabajoId = s.CentroDeTrabajoId,
-                    Clave = s.Clave,
-                    Nombre = s.Nombre,
-                    Localidad = s.DomicilioLocalidad
-                }).ToListAsync(cancellationToken: cancellationToken);
-
+                var res = await _context.InformacionLaborals
+                    .Join(_context.CentrosDeTrabajos,
+                        t => t.TurnoxCentroDeTrabajo.CentroDeTrabajoId,
+                        c => c.CentroDeTrabajoId,
+                        (t, c) => new
+                        {
+                            t.TurnoxCentroDeTrabajoId,
+                            t.EmpleadoId,
+                            t.Status,
+                            t.TurnoxCentroDeTrabajo.Turno,
+                            c.CentroDeTrabajoId,
+                            c.Clave,
+                            c.Nombre,
+                            c.DomicilioLocalidad
+                        }).Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) && x.Status == 1)
+                        .Select(s => new Response
+                        {
+                            CentroDeTrabajoId = s.CentroDeTrabajoId,
+                            TurnoxCentroDeTrabajoId = s.TurnoxCentroDeTrabajoId,
+                            Clave = s.Clave,
+                            Nombre = (s.Clave.Substring(0, 2) == "03") ? (s.Nombre.Substring(45, 10) + ", " + (s.Turno == 0 ? "TM" : "TV")) : (s.Nombre + ", " + (s.Turno == 0 ? "TM" : "TV")),
+                            Localidad = s.DomicilioLocalidad
+                        }).ToListAsync(cancellationToken: cancellationToken);
 
                 return new ApiResponse<List<Response>>(res);
             }
