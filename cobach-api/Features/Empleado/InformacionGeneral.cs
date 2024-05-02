@@ -13,8 +13,8 @@ namespace cobach_api.Features.Empleado
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
-            private readonly IEmpleado _empleado;
-            private readonly IMapper _mapper;
+            readonly IEmpleado _empleado;
+            readonly IMapper _mapper;
             public CommandHandler(IEmpleado empleado, IMapper mapper)
             {
                 _empleado = empleado;

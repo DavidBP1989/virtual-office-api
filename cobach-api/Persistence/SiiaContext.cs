@@ -62,10 +62,6 @@ public partial class SiiaContext : DbContext
 
     public virtual DbSet<TurnosxCentrosDeTrabajo> TurnosxCentrosDeTrabajos { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=sql.cobachbcs.edu.mx;Database=siia;TrustServerCertificate=True;user id=siia;password=S11@2021;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AI");
@@ -85,10 +81,12 @@ public partial class SiiaContext : DbContext
                 .HasNoKey()
                 .ToTable("catalogoPermisosLaborales");
 
+            entity.Property(e => e.Activo).HasColumnName("activo");
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
                 .HasColumnName("nombre");
+            entity.Property(e => e.TiempoPermitido).HasColumnName("tiempoPermitido");
         });
 
         modelBuilder.Entity<CatalogoPlazasAdministrativa>(entity =>
@@ -219,27 +217,29 @@ public partial class SiiaContext : DbContext
 
         modelBuilder.Entity<CorteTiempo>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("CorteTiempo");
+            entity.ToTable("CorteTiempo");
 
-            entity.Property(e => e.CentroDeTrabajo).HasColumnName("centroDeTrabajo");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CentroDeTrabajoId).HasColumnName("centroDeTrabajoId");
             entity.Property(e => e.Comentario).HasColumnName("comentario");
             entity.Property(e => e.Comprobo).HasColumnName("comprobo");
             entity.Property(e => e.EmpleadoId)
                 .HasMaxLength(128)
                 .HasColumnName("empleadoId");
+            entity.Property(e => e.Estatus).HasColumnName("estatus");
+            entity.Property(e => e.FechaRegisto)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaRegisto");
             entity.Property(e => e.FechaSolicitud)
                 .HasColumnType("smalldatetime")
                 .HasColumnName("fechaSolicitud");
             entity.Property(e => e.HoraSalida)
                 .HasColumnType("datetime")
                 .HasColumnName("horaSalida");
-            entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id");
             entity.Property(e => e.PermisoLaboralId).HasColumnName("permisoLaboralId");
             entity.Property(e => e.TiempoEstimado).HasColumnName("tiempoEstimado");
+            entity.Property(e => e.TiempoReal).HasColumnName("tiempoReal");
+            entity.Property(e => e.TurnoCentroTrabajoId).HasColumnName("turnoCentroTrabajoId");
         });
 
         modelBuilder.Entity<Documento>(entity =>
@@ -505,6 +505,7 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.Intereses).HasColumnName("intereses");
             entity.Property(e => e.Plazo).HasColumnName("plazo");
             entity.Property(e => e.Quincena).HasColumnName("quincena");
+            entity.Property(e => e.QuincenaDescuento).HasColumnName("quincenaDescuento");
             entity.Property(e => e.ResumenDescuentos).HasColumnName("resumenDescuentos");
             entity.Property(e => e.ResumenSaldo).HasColumnName("resumenSaldo");
 

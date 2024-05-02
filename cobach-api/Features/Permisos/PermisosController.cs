@@ -1,5 +1,4 @@
-﻿using cobach_api.Features.Seguridad;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +15,13 @@ namespace cobach_api.Features.Permisos
             _mediator = mediator;
         }
 
+        [HttpGet("catalogo-permisos-laborales")]
+        public async Task<IActionResult> CatalogoPermisosLaborales()
+        {
+            var req = new CatalogoPermisosLaborales.Request();
+            return Ok(await _mediator.Send(req));
+        }
+
         [HttpGet("corte-tiempo")]
         public async Task<IActionResult> CortedeTiempo()
         {
@@ -24,7 +30,7 @@ namespace cobach_api.Features.Permisos
         }
 
         [HttpPost("crear-corte-tiempo")]
-        public async Task<IActionResult> crearCortedeTiempo([FromBody] CorteTiempoAgregar.Request request)
+        public async Task<IActionResult> CrearCortedeTiempo([FromBody] CorteTiempoAgregar.Request request)
         {
             return Ok(await _mediator.Send(request));
         }

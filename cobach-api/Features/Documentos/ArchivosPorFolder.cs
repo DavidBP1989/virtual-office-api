@@ -14,8 +14,8 @@ namespace cobach_api.Features.Documentos
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<List<Response>>>
         {
-            private readonly SiiaContext _context;
-            private readonly IUserService _user;
+            readonly SiiaContext _context;
+            readonly IUserService _user;
             public CommandHandler(SiiaContext context, IUserService user)
             {
                 _context = context;
@@ -37,7 +37,7 @@ namespace cobach_api.Features.Documentos
                 {
                     res.Add(new Response
                     {
-                        ApiRoute = $"/documents/file?fileId={file.fileId}&size=128x128",
+                        ApiRoute = $"/documentos/archivo?fileId={file.fileId}&size=128x128",
                         Description = file.description
                     });
                 }

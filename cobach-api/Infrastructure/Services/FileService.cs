@@ -8,14 +8,12 @@ namespace cobach_api.Infrastructure.Services
     public class FileService : IFileService
     {
         private readonly IConfiguration _configuration;
-        private readonly IUserService _user;
-        public FileService(IConfiguration configuration, IUserService user)
+        public FileService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _user = user;
         }
 
-        public byte[] GetImageAsByteArray(string fileName, string size)
+        public byte[] GetImageAsByteArray(string userId, string fileName, string size)
         {
             #pragma warning disable
             //solo funciona para windows
@@ -24,8 +22,6 @@ namespace cobach_api.Infrastructure.Services
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                string userId = _user.GetCurrentUser();
-
                 string filePath = Path.Combine(_configuration["DigitalFileRootPath"]!, "empleados", userId, fileName);
 
                 if (!string.IsNullOrEmpty(size))

@@ -31,10 +31,13 @@ namespace cobach_api.Features.Documentos
         }
 
         [HttpGet("archivo")]
+        [AllowAnonymous]
         public async Task<IActionResult> ObtenerArchivo(string fileId, string size = "")
         {
             var req = new Archivo.Request(fileId, size);
-            return Ok(await _mediator.Send(req));
+            var file = await _mediator.Send(req);
+
+            return File(file.Data.Image, "image/jpg");
         }
     }
 }

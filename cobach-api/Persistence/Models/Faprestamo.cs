@@ -25,6 +25,8 @@ public partial class Faprestamo
 
     public int Quincena { get; set; }
 
+    public int? QuincenaDescuento { get; set; }
+
     public DateTime? FechaPrestamo { get; set; }
 
     public byte? Estado { get; set; }

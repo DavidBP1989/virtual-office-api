@@ -13,5 +13,5 @@ public partial class CmcatalogoProyecto
 
     public string Responsable { get; set; } = null!;
 
-    public bool Activo { get; set; }
+    public bool? Activo { get; set; }
 }

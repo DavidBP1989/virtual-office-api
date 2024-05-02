@@ -2,6 +2,6 @@
 {
     public interface IFileService
     {
-        byte[] GetImageAsByteArray(string fileName, string size);
+        byte[] GetImageAsByteArray(string userId, string fileName, string size);
     }
 }

@@ -13,8 +13,8 @@ namespace cobach_api.Features.Empleado
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
-            private readonly IUserService _user;
-            private readonly SiiaContext _context;
+            readonly IUserService _user;
+            readonly SiiaContext _context;
             public CommandHandler(IUserService user, SiiaContext context)
             {
                 _user = user;

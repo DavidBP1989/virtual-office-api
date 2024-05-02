@@ -9,16 +9,18 @@ namespace cobach_api.Features.Documentos
     public class Archivo
     {
         public record Request(string FileId, string Size) : IRequest<ApiResponse<Response>>;
-        public record Response(byte[]? Image);
+        public record Response(byte[] Image);
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
-            private readonly SiiaContext _context;
-            private readonly IFileService _fileService;
-            public CommandHandler(SiiaContext context, IFileService fileService)
+            readonly SiiaContext _context;
+            readonly IFileService _fileService;
+            readonly IUserService _user;
+            public CommandHandler(SiiaContext context, IFileService fileService, IUserService user)
             {
                 _context = context;
                 _fileService = fileService;
+                _user = user;
             }
 
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
@@ -32,7 +34,7 @@ namespace cobach_api.Features.Documentos
                     })
                     .SingleAsync(cancellationToken: cancellationToken);
 
-                var image = _fileService.GetImageAsByteArray(file.name, request.Size);
+                var image = _fileService.GetImageAsByteArray(_user.GetCurrentUser(), file.name, request.Size);
 
                 return new ApiResponse<Response>(new Response(image));
 

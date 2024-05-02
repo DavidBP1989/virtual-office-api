@@ -10,8 +10,8 @@ namespace cobach_api.Features.Empleado
 {
     public class Repository : IEmpleado
     {
-        private readonly SiiaContext _context;
-        private readonly IUserService _user;
+        readonly SiiaContext _context;
+        readonly IUserService _user;
         public Repository(SiiaContext context, IUserService user)
         {
             _context = context;

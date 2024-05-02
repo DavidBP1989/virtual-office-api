@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using cobach_api.Application.Dtos.Permisos;
-using cobach_api.Features.Permisos.Interfaces;
+﻿using cobach_api.Application.Dtos.Permisos;
 using cobach_api.Infrastructure.Interfaces;
-using cobach_api.Infrastructure.Services;
 using cobach_api.Persistence;
 using cobach_api.Wrappers;
 using MediatR;
@@ -36,7 +33,6 @@ namespace cobach_api.Features.Permisos
                     })
                     .ToListAsync(cancellationToken: cancellationToken);
 
-                
                 return new ApiResponse<List<Response>>(res);
             }
         }
