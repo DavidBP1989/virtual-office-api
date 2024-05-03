@@ -23,9 +23,9 @@ namespace cobach_api.Features.Permisos
         }
 
         [HttpGet("corte-tiempo")]
-        public async Task<IActionResult> CortedeTiempo()
+        public async Task<IActionResult> CortedeTiempo([FromBody] CorteTiempo.Request request)
         {
-            var req = new CorteTiempo.Request();
+            var req = new CorteTiempo.Request(request.periodo);
             return Ok(await _mediator.Send(req));
         }
 
