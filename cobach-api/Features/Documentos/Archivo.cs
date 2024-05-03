@@ -15,12 +15,10 @@ namespace cobach_api.Features.Documentos
         {
             readonly SiiaContext _context;
             readonly IFileService _fileService;
-            readonly IUserService _user;
-            public CommandHandler(SiiaContext context, IFileService fileService, IUserService user)
+            public CommandHandler(SiiaContext context, IFileService fileService)
             {
                 _context = context;
                 _fileService = fileService;
-                _user = user;
             }
 
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
@@ -30,11 +28,12 @@ namespace cobach_api.Features.Documentos
                     .Where(x => x.DocumentoId == request.FileId)
                     .Select(x => new
                     {
-                        name = x.NombreFisico
+                        name = x.NombreFisico,
+                        empleadoId = x.EmpleadoId
                     })
                     .SingleAsync(cancellationToken: cancellationToken);
 
-                var image = _fileService.GetImageAsByteArray(_user.GetCurrentUser(), file.name, request.Size);
+                var image = _fileService.GetImageAsByteArray(file.empleadoId, file.name, request.Size);
 
                 return new ApiResponse<Response>(new Response(image));
 

@@ -40,7 +40,8 @@ namespace cobach_api.Features.Empleado
                 {
                     try
                     {
-                        res.ProfilePhoto = _fileService.GetImageAsByteArray(_user.GetCurrentUser(), doc.DocumentoId, "");
+                        
+                        res.ProfilePhoto = _fileService.GetImageAsByteArray(_user.GetCurrentUser(), doc.NombreFisico, "");
                     }
                     catch { res.ProfilePhoto = null; }
                 }
