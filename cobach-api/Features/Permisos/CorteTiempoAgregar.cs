@@ -33,7 +33,8 @@ namespace cobach_api.Features.Permisos
                     Comentario = request.Comentario,
                     HoraSalida = request.HoraSalida,
                     Comprobo = request.Comprobo,
-                    FechaRegisto = DateTime.Now
+                    FechaRegisto = DateTime.Now,
+                    Estatus = 0
                 };
 
                 _context.CorteTiempos.Add(corteTiempo);

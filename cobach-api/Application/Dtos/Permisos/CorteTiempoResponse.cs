@@ -4,7 +4,7 @@
     {
         public int? TiempoLimite { get; set; }
         public int? TiempoReal { get; set; }
-        public List<CorteTiempoList> cortes { get; set; }
+        public List<CorteTiempoList> Cortes { get; set; } = null!;
     }
 
     public class CorteTiempoList

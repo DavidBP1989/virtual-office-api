@@ -9,7 +9,7 @@ namespace cobach_api.Features.Permisos
 {
     public class CorteTiempo
     {
-        public record Request(int periodo) : IRequest<ApiResponse<Response>>;
+        public record Request(int Periodo, int CentroTrabajoId, int? TurnoCentroTrabajoId = null) : IRequest<ApiResponse<Response>>;
         public class Response : CorteTiempoResponse { }
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
@@ -25,14 +25,17 @@ namespace cobach_api.Features.Permisos
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
             {
                 var cortes = await _context.CorteTiempos
-                    .Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) && (x.FechaRegisto.Value.Year == request.periodo || x.FechaSolicitud.Value.Year == request.periodo))
+                    .Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) &&
+                    (x.FechaRegisto.Value.Year == request.Periodo || x.FechaSolicitud.Value.Year == request.Periodo)
+                    && x.CentroDeTrabajoId == request.CentroTrabajoId &&
+                    (x.TurnoCentroTrabajoId == request.TurnoCentroTrabajoId || request.TurnoCentroTrabajoId == null))
                     .ToListAsync(cancellationToken: cancellationToken);
 
                 var res = new Response
                 {
-                    TiempoLimite = _context.CatalogoPermisosLaborales.Where(w => w.Id == 1 && w.Activo == true).FirstOrDefault().TiempoPermitido,
+                    TiempoLimite = _context.CatalogoPermisosLaborales.Where(w => w.Id == 1 && w.Activo.HasValue && w.Activo.Value).FirstOrDefault().TiempoPermitido,
                     TiempoReal = cortes.Select(s => s.TiempoReal).DefaultIfEmpty(0).Sum(),
-                    cortes = cortes.Select(c => new CorteTiempoList
+                    Cortes = cortes.Select(c => new CorteTiempoList
                     {
                         Id = c.Id,
                         EmpleadoId = c.EmpleadoId,
