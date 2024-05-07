@@ -34,5 +34,11 @@ namespace cobach_api.Features.Permisos
         {
             return Ok(await _mediator.Send(request));
         }
+
+        [HttpPost("actualizar-corte-tiempo")]
+        public async Task<IActionResult> ActualizarCortedeTiempo([FromBody] CorteTiempoActualizar.Request request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
     }
 }
