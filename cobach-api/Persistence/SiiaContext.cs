@@ -56,11 +56,17 @@ public partial class SiiaContext : DbContext
 
     public virtual DbSet<NivelEstudio> NivelEstudios { get; set; }
 
+    public virtual DbSet<PermisoEconomico> PermisoEconomicos { get; set; }
+
     public virtual DbSet<TipoSangre> TipoSangres { get; set; }
 
     public virtual DbSet<TiposDocumento> TiposDocumentos { get; set; }
 
     public virtual DbSet<TurnosxCentrosDeTrabajo> TurnosxCentrosDeTrabajos { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=sql.cobachbcs.edu.mx;Database=siia;TrustServerCertificate=True;user id=siia;password=S11@2021;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -650,6 +656,33 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.Escolaridad)
                 .HasMaxLength(12)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<PermisoEconomico>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__PermisoE__3213E83FF1779EB4");
+
+            entity.ToTable("PermisoEconomico");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CentroDeTrabajoId).HasColumnName("centroDeTrabajoId");
+            entity.Property(e => e.Comentario).HasColumnName("comentario");
+            entity.Property(e => e.ConGoceSueldo).HasColumnName("conGoceSueldo");
+            entity.Property(e => e.EmpleadoId)
+                .HasMaxLength(128)
+                .HasColumnName("empleadoId");
+            entity.Property(e => e.FechaRegistro)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaRegistro");
+            entity.Property(e => e.FechaSolicitudFinal)
+                .HasColumnType("smalldatetime")
+                .HasColumnName("fechaSolicitud_final");
+            entity.Property(e => e.FechaSolicitudInicio)
+                .HasColumnType("smalldatetime")
+                .HasColumnName("fechaSolicitud_inicio");
+            entity.Property(e => e.LapsoPermisoDiasHabiles).HasColumnName("lapsoPermisoDiasHabiles");
+            entity.Property(e => e.PermisoLaboralId).HasColumnName("permisoLaboralId");
+            entity.Property(e => e.TurnoCentroTrabajoId).HasColumnName("turnoCentroTrabajoId");
         });
 
         modelBuilder.Entity<TipoSangre>(entity =>

@@ -40,5 +40,24 @@ namespace cobach_api.Features.Permisos
         {
             return Ok(await _mediator.Send(request));
         }
+
+        [HttpGet("permiso-economico")]
+        public async Task<IActionResult> PermisoEconomico(int Periodo, int CentroTrabajoId, int? TurnoCentroTrabajoId = null)
+        {
+            var req = new PermisoEconomico.Request(Periodo, CentroTrabajoId, TurnoCentroTrabajoId);
+            return Ok(await _mediator.Send(req));
+        }
+
+        [HttpPost("crear-permiso-economico")]
+        public async Task<IActionResult> CrearPermisoEconomico([FromBody] PermisoEconomicoAgregar.Request request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
+
+        [HttpPost("actualizar-permiso-economico")]
+        public async Task<IActionResult> ActualizarPermisoEconomico([FromBody] PermisoEconomicoActualizar.Request request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
     }
 }
