@@ -1,4 +1,5 @@
 ﻿using cobach_api.Application.Dtos.Seguridad;
+using cobach_api.Features.Common.Enums;
 using cobach_api.Features.Seguridad.Interfaces;
 using cobach_api.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +16,16 @@ namespace cobach_api.Features.Seguridad
 
         public async Task<UserConfig> GetUserConfig(string user)
         {
-            return await _context.Empleados
+            var result = await _context.Empleados
                 .Where(x => x.Usuario == user)
                 .Select(u => new UserConfig
                 {
                     FirstTimeLogin = u.Usuario == u.ClaveUsuario,
                     UserId = u.EmpleadoId
                 }).FirstAsync();
+
+            result.AllowConfirmWorkPermits = await _context.AutorizacionSolicitudes.AnyAsync(x => x.Autoriza1 == result.UserId || x.Autoriza2 == result.UserId);
+            return result;
         }
 
         public async Task<bool> Login(string user, string password)

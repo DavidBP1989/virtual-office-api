@@ -34,7 +34,7 @@ namespace cobach_api.Features.Permisos
                     HoraSalida = request.HoraSalida,
                     Comprobo = request.Comprobo,
                     FechaRegisto = DateTime.Now,
-                    Estatus = 0
+                    EstatusPermiso = 0
                 };
 
                 _context.CorteTiempos.Add(corteTiempo);

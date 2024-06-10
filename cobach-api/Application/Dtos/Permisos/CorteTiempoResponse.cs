@@ -23,5 +23,6 @@
         public DateTime? FechaRegisto { get; set; }
         public int? TiempoReal { get; set; }
         public int? Estatus { get; set; }
+        public string? NombreFirmaAutoriza { get; set; }
     }
 }

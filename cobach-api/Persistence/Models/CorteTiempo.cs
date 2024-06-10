@@ -30,4 +30,8 @@ public partial class CorteTiempo
     public int? TiempoReal { get; set; }
 
     public int? Estatus { get; set; }
+
+    public int? EstatusPermiso { get; set; }
+
+    public string? EstatusFirma { get; set; }
 }

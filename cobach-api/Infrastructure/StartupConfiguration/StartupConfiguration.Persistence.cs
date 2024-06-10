@@ -1,5 +1,6 @@
 ﻿using cobach_api.Features.Empleado;
 using cobach_api.Features.Empleado.Interfaces;
+using cobach_api.Features.RevisionPermisos.Interfaces;
 using cobach_api.Features.Seguridad;
 using cobach_api.Features.Seguridad.Interfaces;
 using cobach_api.Persistence;
@@ -17,6 +18,7 @@ namespace cobach_api.Infrastructure.StartupConfiguration
 
             services.AddScoped<IAuthentication, SeguridadRepository>();
             services.AddScoped<IEmpleado, Repository>();
+            services.AddScoped<IRevisionPermisos, Features.RevisionPermisos.Repository>();
         }
     }
 }

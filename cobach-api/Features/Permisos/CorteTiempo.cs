@@ -25,10 +25,12 @@ namespace cobach_api.Features.Permisos
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
             {
                 var cortes = await _context.CorteTiempos
-                    .Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) &&
-                    (x.FechaRegisto.Value.Year == request.Periodo || x.FechaSolicitud.Value.Year == request.Periodo)
-                    && x.CentroDeTrabajoId == request.CentroTrabajoId &&
-                    (x.TurnoCentroTrabajoId == request.TurnoCentroTrabajoId || request.TurnoCentroTrabajoId == null))
+                    .Where(
+                        x => x.EmpleadoId.Equals(_user.GetCurrentUser()) &&
+                        (x.FechaRegisto.Value.Year == request.Periodo || x.FechaSolicitud.Value.Year == request.Periodo) &&
+                        x.CentroDeTrabajoId == request.CentroTrabajoId &&
+                        (x.TurnoCentroTrabajoId == request.TurnoCentroTrabajoId || request.TurnoCentroTrabajoId == null)
+                    )
                     .ToListAsync(cancellationToken: cancellationToken);
 
                 var res = new Response
@@ -61,7 +63,12 @@ namespace cobach_api.Features.Permisos
                         TurnoCentroTrabajoId = c.TurnoCentroTrabajoId,
                         FechaRegisto = c.FechaRegisto,
                         TiempoReal = c.TiempoReal,
-                        Estatus = c.Estatus
+                        Estatus = c.EstatusPermiso,
+                        NombreFirmaAutoriza = 
+                            _context.Empleados
+                            .Where(x => x.EmpleadoId == c.EstatusFirma)
+                            .Select(e => $"{e.Nombres} {e.PrimerApellido} {e.SegundoApellido}")
+                            .FirstOrDefault(),
                     }).ToList()
                 };
 

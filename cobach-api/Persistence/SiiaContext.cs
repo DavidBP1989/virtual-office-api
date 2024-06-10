@@ -16,6 +16,8 @@ public partial class SiiaContext : DbContext
     {
     }
 
+    public virtual DbSet<AutorizacionSolicitude> AutorizacionSolicitudes { get; set; }
+
     public virtual DbSet<CamposDisciplinare> CamposDisciplinares { get; set; }
 
     public virtual DbSet<CatalogoPermisosLaborale> CatalogoPermisosLaborales { get; set; }
@@ -65,12 +67,27 @@ public partial class SiiaContext : DbContext
     public virtual DbSet<TurnosxCentrosDeTrabajo> TurnosxCentrosDeTrabajos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=sql.cobachbcs.edu.mx;Database=siia;TrustServerCertificate=True;user id=siia;password=S11@2021;");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:siia");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AI");
+
+        modelBuilder.Entity<AutorizacionSolicitude>(entity =>
+        {
+            entity.HasKey(e => e.IdProyecto);
+
+            entity.Property(e => e.IdProyecto)
+                .ValueGeneratedNever()
+                .HasColumnName("idProyecto");
+            entity.Property(e => e.Autoriza1)
+                .HasMaxLength(128)
+                .HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Autoriza2)
+                .HasMaxLength(128)
+                .HasDefaultValueSql("(newid())");
+            entity.Property(e => e.AutorizaPermiso).HasMaxLength(128);
+        });
 
         modelBuilder.Entity<CamposDisciplinare>(entity =>
         {
@@ -233,6 +250,10 @@ public partial class SiiaContext : DbContext
                 .HasMaxLength(128)
                 .HasColumnName("empleadoId");
             entity.Property(e => e.Estatus).HasColumnName("estatus");
+            entity.Property(e => e.EstatusFirma)
+                .HasMaxLength(128)
+                .HasColumnName("estatusFirma");
+            entity.Property(e => e.EstatusPermiso).HasColumnName("estatusPermiso");
             entity.Property(e => e.FechaRegisto)
                 .HasColumnType("datetime")
                 .HasColumnName("fechaRegisto");

@@ -28,8 +28,8 @@ namespace cobach_api.Features.Permisos
                 if(corteTiempo is null)
                     return new ApiResponse<Response>("El registro no existe.");
 
-                if(corteTiempo.Estatus == 2 || corteTiempo.Estatus == 3)
-                    return new ApiResponse<Response>("El registro no se puede actualizar por que su estatus es: " + corteTiempo.Estatus);
+                if(corteTiempo.EstatusPermiso == 2 || corteTiempo.EstatusPermiso == 3)
+                    return new ApiResponse<Response>("El registro no se puede actualizar por que su estatus es: " + corteTiempo.EstatusPermiso);
 
                 corteTiempo.CentroDeTrabajoId = request.CentroDeTrabajoId;
                 corteTiempo.Comentario = request.Comentario;
@@ -37,7 +37,7 @@ namespace cobach_api.Features.Permisos
                 corteTiempo.HoraSalida = request.HoraSalida;
                 corteTiempo.TiempoEstimado= request.TiempoEstimado;
                 corteTiempo.TurnoCentroTrabajoId = request.TurnoCentroTrabajoId;
-                corteTiempo.Estatus = 0;
+                corteTiempo.EstatusPermiso = 0;
 
                 _context.Update(corteTiempo);
                 await _context.SaveChangesAsync();
