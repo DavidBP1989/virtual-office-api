@@ -17,7 +17,7 @@ public partial class PermisoEconomico
 
     public DateTime? FechaRegistro { get; set; }
 
-    public DateTime? FechaSolicitudInicio { get; set; }
+    public DateTime? FechaSolicitud { get; set; }
 
     public DateTime? FechaSolicitudFinal { get; set; }
 
@@ -26,4 +26,12 @@ public partial class PermisoEconomico
     public string? Comentario { get; set; }
 
     public bool? ConGoceSueldo { get; set; }
+
+    public string? ComentarioDias { get; set; }
+
+    public int? EstatusPermiso { get; set; }
+
+    public string? EstatusFirma { get; set; }
+
+    public string? MotivoRechazo { get; set; }
 }

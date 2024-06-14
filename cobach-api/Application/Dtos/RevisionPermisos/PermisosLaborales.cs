@@ -1,6 +1,4 @@
-﻿using cobach_api.Features.Common.Enums;
-
-namespace cobach_api.Application.Dtos.RevisionPermisos
+﻿namespace cobach_api.Application.Dtos.RevisionPermisos
 {
     public class PermisosLaborales
     {
@@ -19,5 +17,11 @@ namespace cobach_api.Application.Dtos.RevisionPermisos
         public int TiempoEstimado { get; set; }
         public string? Comentario { get; set; }
         public int Estatus { get; set; }
+        public int? TiempoReal { get; set; }
+        public int TiempoLimite { get; set; }
+        public string ComentarioDias { get; set; } = null!;
+        public bool? ConGoceSueldo { get; set; }
+        public int? LapsoPermisoDiasHabiles { get; set; }
+        public int? DiasReales { get; set; }
     }
 }

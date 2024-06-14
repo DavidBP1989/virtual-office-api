@@ -1,4 +1,5 @@
 ﻿using cobach_api.Application.Dtos.Permisos;
+using cobach_api.Features.Common.Enums;
 using cobach_api.Infrastructure.Interfaces;
 using cobach_api.Persistence;
 using cobach_api.Wrappers;
@@ -26,7 +27,8 @@ namespace cobach_api.Features.Permisos
             {
                 var cortes = await _context.CorteTiempos
                     .Where(
-                        x => x.EmpleadoId.Equals(_user.GetCurrentUser()) &&
+                        x => x.EmpleadoId == _user.GetCurrentUser() &&
+                        x.FechaRegisto.HasValue && x.FechaSolicitud.HasValue &&
                         (x.FechaRegisto.Value.Year == request.Periodo || x.FechaSolicitud.Value.Year == request.Periodo) &&
                         x.CentroDeTrabajoId == request.CentroTrabajoId &&
                         (x.TurnoCentroTrabajoId == request.TurnoCentroTrabajoId || request.TurnoCentroTrabajoId == null)
@@ -35,8 +37,13 @@ namespace cobach_api.Features.Permisos
 
                 var res = new Response
                 {
-                    TiempoLimite = _context.CatalogoPermisosLaborales.Where(w => w.Id == 1 && w.Activo.HasValue && w.Activo.Value).FirstOrDefault().TiempoPermitido,
-                    TiempoReal = cortes.Select(s => s.TiempoReal).DefaultIfEmpty(0).Sum(),
+                    TiempoLimite = _context.CatalogoPermisosLaborales
+                        .Where(w => w.Id == (int)TipoPermisosLaborales.CorteTiempo && w.Activo.HasValue && w.Activo.Value)
+                        .First().TiempoPermitido,
+                    TiempoReal = cortes
+                        .Select(s => s.TiempoReal)
+                        .DefaultIfEmpty(0)
+                        .Sum(),
                     Cortes = cortes.Select(c => new CorteTiempoList
                     {
                         Id = c.Id,
@@ -69,6 +76,7 @@ namespace cobach_api.Features.Permisos
                             .Where(x => x.EmpleadoId == c.EstatusFirma)
                             .Select(e => $"{e.Nombres} {e.PrimerApellido} {e.SegundoApellido}")
                             .FirstOrDefault(),
+                        MotivoRechazo = c.MotivoRechazo ?? ""
                     }).ToList()
                 };
 

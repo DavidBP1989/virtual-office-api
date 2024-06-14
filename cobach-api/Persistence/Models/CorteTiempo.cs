@@ -34,4 +34,6 @@ public partial class CorteTiempo
     public int? EstatusPermiso { get; set; }
 
     public string? EstatusFirma { get; set; }
+
+    public string? MotivoRechazo { get; set; }
 }

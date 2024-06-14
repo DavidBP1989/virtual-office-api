@@ -1,4 +1,5 @@
-﻿using cobach_api.Infrastructure.Interfaces;
+﻿using cobach_api.Features.Common.Enums;
+using cobach_api.Infrastructure.Interfaces;
 using cobach_api.Persistence;
 using cobach_api.Wrappers;
 using MediatR;
@@ -7,7 +8,7 @@ namespace cobach_api.Features.Permisos
 {
     public class PermisoEconomicoAgregar
     {
-        public record Request(int CentroDeTrabajoId, string Comentario, DateTime FechaSolicitudInicio, DateTime FechaSolicitudFinal, int LapsoDias, bool ConGoce, int? TurnoCentroTrabajoId = null)
+        public record Request(int CentroDeTrabajoId, string Comentario, string ComentarioDias, DateTime FechaSolicitud, int LapsoDias, bool ConGoce, int? TurnoCentroTrabajoId = null)
             : IRequest<ApiResponse<Response>>;
         public record Response(int PermisoId);
 
@@ -26,15 +27,16 @@ namespace cobach_api.Features.Permisos
                 Persistence.Models.PermisoEconomico permiso = new()
                 {
                     EmpleadoId = _user.GetCurrentUser(),
-                    PermisoLaboralId = 2,
+                    PermisoLaboralId = (int)TipoPermisosLaborales.PermisoEconomico,
                     CentroDeTrabajoId = request.CentroDeTrabajoId,
                     TurnoCentroTrabajoId = request.TurnoCentroTrabajoId,
                     FechaRegistro = DateTime.Now,
-                    FechaSolicitudInicio = request.FechaSolicitudInicio,
-                    FechaSolicitudFinal = request.FechaSolicitudFinal,
+                    FechaSolicitud = request.FechaSolicitud,
                     LapsoPermisoDiasHabiles = request.LapsoDias,
                     Comentario = request.Comentario,
-                    ConGoceSueldo = request.ConGoce
+                    ComentarioDias = request.ComentarioDias,
+                    ConGoceSueldo = request.ConGoce,
+                    EstatusPermiso = 0
                 };
 
                 _context.PermisoEconomicos.Add(permiso);

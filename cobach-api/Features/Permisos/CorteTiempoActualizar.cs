@@ -23,7 +23,7 @@ namespace cobach_api.Features.Permisos
             }
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
             {
-                Persistence.Models.CorteTiempo corteTiempo = await _context.CorteTiempos.FindAsync(request.CorteId);
+                var corteTiempo = await _context.CorteTiempos.FindAsync(new object?[] { request.CorteId }, cancellationToken: cancellationToken);
 
                 if(corteTiempo is null)
                     return new ApiResponse<Response>("El registro no existe.");
@@ -40,7 +40,7 @@ namespace cobach_api.Features.Permisos
                 corteTiempo.EstatusPermiso = 0;
 
                 _context.Update(corteTiempo);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 return new ApiResponse<Response>(new Response(corteTiempo.Id));
             }

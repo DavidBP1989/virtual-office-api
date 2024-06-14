@@ -263,6 +263,7 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.HoraSalida)
                 .HasColumnType("datetime")
                 .HasColumnName("horaSalida");
+            entity.Property(e => e.MotivoRechazo).HasColumnName("motivoRechazo");
             entity.Property(e => e.PermisoLaboralId).HasColumnName("permisoLaboralId");
             entity.Property(e => e.TiempoEstimado).HasColumnName("tiempoEstimado");
             entity.Property(e => e.TiempoReal).HasColumnName("tiempoReal");
@@ -688,20 +689,26 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CentroDeTrabajoId).HasColumnName("centroDeTrabajoId");
             entity.Property(e => e.Comentario).HasColumnName("comentario");
+            entity.Property(e => e.ComentarioDias).HasColumnName("comentarioDias");
             entity.Property(e => e.ConGoceSueldo).HasColumnName("conGoceSueldo");
             entity.Property(e => e.EmpleadoId)
                 .HasMaxLength(128)
                 .HasColumnName("empleadoId");
+            entity.Property(e => e.EstatusFirma)
+                .HasMaxLength(128)
+                .HasColumnName("estatusFirma");
+            entity.Property(e => e.EstatusPermiso).HasColumnName("estatusPermiso");
             entity.Property(e => e.FechaRegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fechaRegistro");
+            entity.Property(e => e.FechaSolicitud)
+                .HasColumnType("smalldatetime")
+                .HasColumnName("fechaSolicitud");
             entity.Property(e => e.FechaSolicitudFinal)
                 .HasColumnType("smalldatetime")
                 .HasColumnName("fechaSolicitud_final");
-            entity.Property(e => e.FechaSolicitudInicio)
-                .HasColumnType("smalldatetime")
-                .HasColumnName("fechaSolicitud_inicio");
             entity.Property(e => e.LapsoPermisoDiasHabiles).HasColumnName("lapsoPermisoDiasHabiles");
+            entity.Property(e => e.MotivoRechazo).HasColumnName("motivoRechazo");
             entity.Property(e => e.PermisoLaboralId).HasColumnName("permisoLaboralId");
             entity.Property(e => e.TurnoCentroTrabajoId).HasColumnName("turnoCentroTrabajoId");
         });

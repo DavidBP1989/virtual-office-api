@@ -1,4 +1,5 @@
-﻿using cobach_api.Infrastructure.Interfaces;
+﻿using cobach_api.Features.Common.Enums;
+using cobach_api.Infrastructure.Interfaces;
 using cobach_api.Persistence;
 using cobach_api.Wrappers;
 using MediatR;
@@ -25,7 +26,7 @@ namespace cobach_api.Features.Permisos
                 Persistence.Models.CorteTiempo corteTiempo = new()
                 {
                     EmpleadoId = _user.GetCurrentUser(),
-                    PermisoLaboralId = 1,
+                    PermisoLaboralId = (int)TipoPermisosLaborales.CorteTiempo,
                     CentroDeTrabajoId = request.CentroDeTrabajoId,
                     TurnoCentroTrabajoId = request.TurnoCentroTrabajoId,
                     FechaSolicitud = request.FechaSolicitud,

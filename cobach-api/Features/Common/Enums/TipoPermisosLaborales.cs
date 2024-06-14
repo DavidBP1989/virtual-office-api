@@ -2,7 +2,7 @@
 {
     public enum TipoPermisosLaborales
     {
-        CorteTiempo,
-        PermisoEconomico
+        CorteTiempo = 1,
+        PermisoEconomico = 2
     }
 }

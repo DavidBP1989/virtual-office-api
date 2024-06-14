@@ -24,5 +24,6 @@
         public int? TiempoReal { get; set; }
         public int? Estatus { get; set; }
         public string? NombreFirmaAutoriza { get; set; }
+        public string MotivoRechazo { get; set; } = null!;
     }
 }
