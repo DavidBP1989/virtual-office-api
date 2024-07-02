@@ -9,6 +9,7 @@ namespace cobach_api.Features.Empleado
         {
             CreateMap<InformacionGeneralResponse, InformacionGeneral.Response>();
             CreateMap<FondoAhorroResponse, FondoAhorro.Response>();
+            CreateMap<Application.Dtos.Empleado.FondoAhorroHistorial, FondoAhorroHistorial.Response>();
         }
     }
 }

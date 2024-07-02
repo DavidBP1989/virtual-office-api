@@ -25,6 +25,8 @@ public partial class Fatransaccione
 
     public int? IdPrestamo { get; set; }
 
+    public virtual FacatalogoConcepto IdCatalogoConceptoNavigation { get; set; } = null!;
+
     public virtual Faprestamo? IdPrestamoNavigation { get; set; }
 
     public virtual Faregistro IdRegistroFaNavigation { get; set; } = null!;

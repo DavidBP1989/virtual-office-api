@@ -2,6 +2,7 @@
 {
     public class FondoAhorroResponse
     {
+        public int IdRegistro { get; set; }
         public DateTime FechaIngreso { get; set; }
         public double? Aportacion { get; set; }
         public bool? TipoAportacion { get; set; }
@@ -9,7 +10,7 @@
         public double Acumulado { get; set; }
         public List<CuentaBancaria>? CuentasBancarias { get; set; }
         public List<Beneficiario>? Beneficiarios { get; set; }
-        public Prestamo? Prestamos { get; set; }
+        public List<Prestamo>? Prestamos { get; set; }
 
         public class Prestamo
         {

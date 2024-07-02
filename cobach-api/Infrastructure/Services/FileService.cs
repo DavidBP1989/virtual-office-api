@@ -2,15 +2,19 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using cobach_api.Infrastructure.Extensions;
+using iTextSharp.text.pdf;
+using cobach_api.Features.Common.Enums;
 
 namespace cobach_api.Infrastructure.Services
 {
     public class FileService : IFileService
     {
-        private readonly IConfiguration _configuration;
-        public FileService(IConfiguration configuration)
+        readonly IConfiguration _configuration;
+        readonly IQRService _qrService;
+        public FileService(IConfiguration configuration, IQRService qrService)
         {
             _configuration = configuration;
+            _qrService = qrService;
         }
 
         public byte[] GetImageAsByteArray(string userId, string fileName, string size)
@@ -86,6 +90,44 @@ namespace cobach_api.Infrastructure.Services
             return m.ToArray();
         }
 
+        public byte[] GetPDFPermission(TipoPermisosLaborales tipoPermiso, Dictionary<string, string> workPermit)
+        {
+            string fileName = tipoPermiso switch
+            { 
+                TipoPermisosLaborales.CorteTiempo => "CorteDeTiempo.pdf",
+                TipoPermisosLaborales.PermisoEconomico => "PermisoEconomico.pdf",
+                _ => ":v"
+            };
+            string pdfPath = Path.Combine(_configuration["PdfPath"], fileName);
+            if (!File.Exists(pdfPath))
+                return new byte[0];
+
+            var output = new MemoryStream();
+            var reader = new PdfReader(pdfPath);
+            var stamper = new PdfStamper(reader, output);
+            var formFields = stamper.AcroFields;
+
+            foreach (var field in workPermit.Keys)
+            {
+                switch (field.ToString())
+                {
+                    case "imagenQR":
+                        PushbuttonField btnQR = formFields.GetNewPushbuttonFromField("imagenQR");
+                        btnQR.Image = iTextSharp.text.Image.GetInstance(_qrService.GetQRCode("https://www.cobachbcs.edu.mx/"));
+                        formFields.ReplacePushbuttonField("imagenQR", btnQR.Field);
+                        break;
+                    default:
+                        formFields.SetField(field, workPermit[field]);
+                        break;
+                }
+            }
+            stamper.FormFlattening = true;
+            stamper.Close();
+            reader.Close();
+
+            return output.ToArray();
+        }
+
         private ImageCodecInfo GetEncoderInfo(string mimeType)
         {
             int j;
@@ -95,6 +137,16 @@ namespace cobach_api.Infrastructure.Services
                 if (encoders[j].MimeType == mimeType) return encoders[j];
             }
             return null;
+        }
+
+        Dictionary<string, string> GetFormFieldNames(string pdfPath)
+        {
+            var fields = new Dictionary<string, string>();
+            var reader = new PdfReader(pdfPath);
+            foreach (KeyValuePair<string, AcroFields.Item> kvp in reader.AcroFields.Fields) fields.Add(kvp.Key, "");
+            reader.Close();
+
+            return fields;
         }
     }
 }

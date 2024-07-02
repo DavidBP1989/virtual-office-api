@@ -42,6 +42,8 @@ public partial class SiiaContext : DbContext
 
     public virtual DbSet<Fabeneficiario> Fabeneficiarios { get; set; }
 
+    public virtual DbSet<FacatalogoConcepto> FacatalogoConceptos { get; set; }
+
     public virtual DbSet<FacuentasBancaria> FacuentasBancarias { get; set; }
 
     public virtual DbSet<Faprestamo> Faprestamos { get; set; }
@@ -148,6 +150,7 @@ public partial class SiiaContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("siglasPlazaAdministrativa");
             entity.Property(e => e.SueldoFederal).HasColumnName("sueldoFederal");
+            entity.Property(e => e.SueldoMensPlazaSindicalizada).HasColumnName("sueldoMensPlazaSindicalizada");
             entity.Property(e => e.SueldoMensualPlaza).HasColumnName("sueldoMensualPlaza");
             entity.Property(e => e.TipoAdministrativo)
                 .HasMaxLength(1)
@@ -481,6 +484,22 @@ public partial class SiiaContext : DbContext
                 .HasConstraintName("FK_FABeneficiarios_FARegistro");
         });
 
+        modelBuilder.Entity<FacatalogoConcepto>(entity =>
+        {
+            entity.HasKey(e => e.IdCatalogoConcepto);
+
+            entity.ToTable("FACatalogoConceptos");
+
+            entity.Property(e => e.IdCatalogoConcepto).HasColumnName("idCatalogoConcepto");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.Nomenclatura)
+                .HasMaxLength(5)
+                .IsUnicode(false);
+            entity.Property(e => e.TipoConcepto).HasComment("0 - Egreso\r\n1 - Ingreso");
+        });
+
         modelBuilder.Entity<FacuentasBancaria>(entity =>
         {
             entity.HasKey(e => e.IdCuentasBancarias);
@@ -592,6 +611,11 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.IdPrestamo).HasColumnName("idPrestamo");
             entity.Property(e => e.IdRegistroFa).HasColumnName("idRegistroFA");
             entity.Property(e => e.Quincena).HasColumnName("quincena");
+
+            entity.HasOne(d => d.IdCatalogoConceptoNavigation).WithMany(p => p.Fatransacciones)
+                .HasForeignKey(d => d.IdCatalogoConcepto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FATransacciones_FACatalogoConceptos");
 
             entity.HasOne(d => d.IdPrestamoNavigation).WithMany(p => p.Fatransacciones)
                 .HasForeignKey(d => d.IdPrestamo)

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using cobach_api.Features.Common.Enums;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,6 +59,26 @@ namespace cobach_api.Features.Permisos
         public async Task<IActionResult> ActualizarPermisoEconomico([FromBody] PermisoEconomicoActualizar.Request request)
         {
             return Ok(await _mediator.Send(request));
+        }
+
+        [HttpGet("descargar-corte-tiempo")]
+        [AllowAnonymous]
+        public async Task<IActionResult> DescargarCorteTiempo(int permissionId)
+        {
+            var req = new Descargar.Request(permissionId, TipoPermisosLaborales.CorteTiempo);
+            var file = await _mediator.Send(req);
+
+            return File(file.Data.File, "application/pdf");
+        }
+
+        [HttpGet("descargar-permiso-economico")]
+        [AllowAnonymous]
+        public async Task<IActionResult> DescargarPermisoEconomico(int permissionId)
+        {
+            var req = new Descargar.Request(permissionId, TipoPermisosLaborales.PermisoEconomico);
+            var file = await _mediator.Send(req);
+
+            return File(file.Data.File, "application/pdf");
         }
     }
 }

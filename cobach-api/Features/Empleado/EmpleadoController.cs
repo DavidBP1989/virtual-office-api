@@ -36,6 +36,13 @@ namespace cobach_api.Features.Empleado
             return Ok(await _mediator.Send(req));
         }
 
+        [HttpGet("fondo-ahorro-historial")]
+        public async Task<IActionResult> FondoAhorroHistorial(int idRegistro)
+        {
+            var req = new FondoAhorroHistorial.Request(idRegistro);
+            return Ok(await _mediator.Send(req));
+        }
+
         [HttpGet("centros-trabajo")]
         public async Task<IActionResult> CentrosTrabajo()
         {

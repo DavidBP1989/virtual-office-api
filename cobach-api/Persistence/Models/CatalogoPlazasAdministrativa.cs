@@ -21,6 +21,8 @@ public partial class CatalogoPlazasAdministrativa
 
     public double? SueldoMensualPlaza { get; set; }
 
+    public double? SueldoMensPlazaSindicalizada { get; set; }
+
     public double? SueldoFederal { get; set; }
 
     public string? Ejercicio { get; set; }

@@ -29,6 +29,7 @@ namespace cobach_api.Features.Empleado
                 .Where(w => w.EmpleadoId == _user.GetCurrentUser())
                 .Select(s => new FondoAhorroResponse
                 {
+                    IdRegistro = s.IdRegistroFa,
                     FechaIngreso = s.FechaIngreso,
                     Aportacion = s.Aportacion,
                     TipoAportacion = s.TipoAportacion,
@@ -55,10 +56,26 @@ namespace cobach_api.Features.Empleado
                         FechaPrestamo = sp.FechaPrestamo,
                         ImporteTransferencia = sp.ImporteTransferencia,
                         Aval = _context.Empleados.Where(wa => wa.EmpleadoId == sp.Aval).Select(sa => sa.Nombres).FirstOrDefault() + " " + _context.Empleados.Where(wa => wa.EmpleadoId == sp.Aval).Select(sa => sa.PrimerApellido).FirstOrDefault() + " " + _context.Empleados.Where(wa => wa.EmpleadoId == sp.Aval).Select(sa => sa.SegundoApellido).FirstOrDefault()
-                    }).FirstOrDefault()
+                    }).ToList()
                 }).FirstOrDefaultAsync();
 
             return q;
+        }
+
+        public async Task<List<Application.Dtos.Empleado.FondoAhorroHistorial>> ObtenerFondoAhorroHistorial(int idRegistro)
+        {
+            return await _context.Fatransacciones
+                .Join(_context.Faregistros, ft => ft.IdRegistroFa, fr => fr.IdRegistroFa, (ft, fr) => new { ft, fr })
+                .Join(_context.FacatalogoConceptos, all => all.ft.IdCatalogoConcepto, fc => fc.IdCatalogoConcepto, (all, fc) => new { all, fc.Descripcion })
+                .Where(x => x.all.ft.IdRegistroFa == idRegistro)
+                .Select(s => new Application.Dtos.Empleado.FondoAhorroHistorial
+                {
+                    Concepto = s.Descripcion ?? "",
+                    Quincena = s.all.ft.Quincena.GetValueOrDefault().ToString().Substring(4, 2),
+                    Fecha = s.all.ft.FechaTransaccion,
+                    Importe = s.all.ft.Importe
+                })
+                .ToListAsync();
         }
 
         public async Task<InformacionGeneralResponse> ObtenerInformacionGeneral()
