@@ -2,10 +2,11 @@
 {
     public enum EstatusPermisos
     {
-        EnProcesoDeRevision,
-        EnProcesoFirmante1,
-        EnProcesoFirmante2,
-        Rechazado,
-        Confirmado
+        EnProcesoDeRevision, //0
+        EnProcesoFirmante1, // 1
+        EnProcesoFirmante2, // 2
+        Rechazado, //3
+        Confirmado, //4
+        Eliminado //5
     }
 }

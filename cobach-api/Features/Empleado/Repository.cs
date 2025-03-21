@@ -18,6 +18,22 @@ namespace cobach_api.Features.Empleado
             _user = user;
         }
 
+        public async Task<List<int>> ObtenerCentrosDeTrabajo()
+        {
+            return await _context.InformacionLaborals
+                .Join(_context.TurnosxCentrosDeTrabajos,
+                    i => i.TurnoxCentroDeTrabajoId,
+                    t => t.TurnoxCentroDeTrabajoId, (i, t) => new
+                    {
+                        i.EmpleadoId,
+                        t.CentroDeTrabajoId
+                    }
+                )
+                .Where(x => x.EmpleadoId == _user.GetCurrentUser())
+                .Select(x => x.CentroDeTrabajoId)
+                .ToListAsync();
+        }
+
         public async Task<FondoAhorroResponse?> ObtenerFondoAhorro()
         {
             int? quincena = _context.Fatransacciones
@@ -26,7 +42,7 @@ namespace cobach_api.Features.Empleado
                     .Max() ?? 0;
 
             var q = await _context.Faregistros
-                .Where(w => w.EmpleadoId == _user.GetCurrentUser())
+                .Where(w => w.EmpleadoId == _user.GetCurrentUser() && w.Estado == 1)
                 .Select(s => new FondoAhorroResponse
                 {
                     IdRegistro = s.IdRegistroFa,
@@ -124,7 +140,7 @@ namespace cobach_api.Features.Empleado
                 .FirstAsync();
 
             q.Laboral = await _context.InformacionLaborals
-                .Where(x => x.EmpleadoId == _user.GetCurrentUser())
+                .Where(x => x.EmpleadoId == _user.GetCurrentUser() && x.StatusBorrado == 0)
                 .Select(s => new InformacionLaboral
                 {
                     CentroTrabajo = _context.TurnosxCentrosDeTrabajos
@@ -154,7 +170,7 @@ namespace cobach_api.Features.Empleado
                         ? "Directivo" : "",
                     FechaIngreso = s.FechaIngreso,
                     Sindicalizado = Convert.ToBoolean(s.Sindicalizado),
-                    Plaza = _context.CatalogoPlazasAdministrativas.First(x => x.CatalogoPlazasAdministrativasId == s.IdPlaza).DescripcionPlazaAdministrativa,
+                    IdPlaza = s.IdPlaza,
                     ConCaracter = s.Caracter == 0
                         ? "Base" : s.Caracter == 1
                         ? "Confianza" : s.Caracter == 2
@@ -162,6 +178,13 @@ namespace cobach_api.Features.Empleado
                     DenominacionPlaza = s.DenominacionPlaza
                 })
                 .ToListAsync();
+
+            foreach(var l in q.Laboral)
+            {
+                l.Plaza = l.TipoEmpleado == "Docente"
+                    ? _context.CatalogoPlazasDocentes.First(x => x.CatalogoPlazasDocentesId == l.IdPlaza).DescripcionPlazaDocente
+                    : _context.CatalogoPlazasAdministrativas.First(x => x.CatalogoPlazasAdministrativasId == l.IdPlaza).DescripcionPlazaAdministrativa;
+            }
 
             return q;
         }

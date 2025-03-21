@@ -3,11 +3,11 @@ using cobach_api.Persistence;
 using cobach_api.Wrappers;
 using MediatR;
 
-namespace cobach_api.Features.Permisos
+namespace cobach_api.Features.Permisos.PermisoEconomico
 {
     public class PermisoEconomicoActualizar
     {
-        public record Request(int PermisoId, int CentroDeTrabajoId, string Comentario, string ComentarioDias, DateTime FechaSolicitud,  int LapsoDias, bool ConGoce, int? TurnoCentroTrabajoId = null)
+        public record Request(int PermisoId, int CentroDeTrabajoId, string Comentario, string ComentarioDias, DateTime FechaSolicitud, int LapsoDias, bool ConGoce, int? TurnoCentroTrabajoId = null)
             : IRequest<ApiResponse<Response>>;
         public record Response(int PermisoId);
 

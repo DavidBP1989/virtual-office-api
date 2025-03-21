@@ -55,5 +55,17 @@ namespace cobach_api.Features.Empleado
         {
             return Ok(await _mediator.Send(request));
         }
+
+        [HttpGet("busqueda-empleado")]
+        public async Task<IActionResult> BusquedaEmpleado(string filtro)
+        {
+            return Ok(await _mediator.Send(new BusquedaEmpleado.Request(filtro)));
+        }
+
+        [HttpGet("empleados")]
+        public async Task<IActionResult> Empleados()
+        {
+            return Ok(await _mediator.Send(new Empleados.Request()));
+        }
     }
 }

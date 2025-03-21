@@ -36,4 +36,6 @@ public partial class CorteTiempo
     public string? EstatusFirma { get; set; }
 
     public string? MotivoRechazo { get; set; }
+
+    public string? MotivoEliminacion { get; set; }
 }

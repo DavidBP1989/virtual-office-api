@@ -1,13 +1,19 @@
 ﻿namespace cobach_api.Application.Dtos.Permisos
 {
-    public class CorteTiempoResponse
+    public class CortesDeTiempoResponse
     {
         public int? TiempoLimite { get; set; }
         public int? TiempoReal { get; set; }
-        public List<CorteTiempoList> Cortes { get; set; } = null!;
+        public List<CortesDeTiempoPorCentroDeTrabajo> CortesDeTiempoPorCentroDeTrabajo { get; set; } = null!;
     }
 
-    public class CorteTiempoList
+    public class CortesDeTiempoPorCentroDeTrabajo
+    {
+        public string? CentroDeTrabajo { get; set; } = null!;
+        public List<CorteDeTiempo> CortesDeTiempo { get; set; } = null!;
+    }
+
+    public class CorteDeTiempo
     {
         public int Id { get; set; }
         public string? EmpleadoId { get; set; }

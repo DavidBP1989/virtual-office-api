@@ -30,12 +30,23 @@ public partial class InformacionLaboral
     /// </summary>
     public byte Caracter { get; set; }
 
+    /// <summary>
+    /// 0.-DEFINITIVO
+    /// 1.-INTERINO
+    /// 2.-TIEMPO DETERMINADO
+    /// 3.-TIEMPO INDETERMINADO
+    /// </summary>
+    public byte? SubCaracter { get; set; }
+
     public DateTime FechaIngreso { get; set; }
 
     public DateTime? FechaBaja { get; set; }
 
     public string? MotivoBaja { get; set; }
 
+    /// <summary>
+    /// Valores numéricos para tipos de baja, desde jubilacion, renuncia, deceso o simple baja
+    /// </summary>
     public byte Status { get; set; }
 
     public byte Sindicalizado { get; set; }
@@ -49,6 +60,11 @@ public partial class InformacionLaboral
     public bool? K1 { get; set; }
 
     public byte? HorasK1 { get; set; }
+
+    /// <summary>
+    /// Campo para aplicar un borrado lógico. 0 = activo 1 = Borrado logico
+    /// </summary>
+    public byte? StatusBorrado { get; set; }
 
     public virtual Empleado Empleado { get; set; } = null!;
 

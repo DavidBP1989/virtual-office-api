@@ -1,6 +1,8 @@
 ﻿using cobach_api.Features.Empleado;
 using cobach_api.Features.Empleado.Interfaces;
+using cobach_api.Features.Permisos.CorteTiempo;
 using cobach_api.Features.Permisos.Interfaces;
+using cobach_api.Features.Permisos.PermisoEconomico;
 using cobach_api.Features.RevisionPermisos.Interfaces;
 using cobach_api.Features.Seguridad;
 using cobach_api.Features.Seguridad.Interfaces;
@@ -20,10 +22,12 @@ namespace cobach_api.Infrastructure.StartupConfiguration
             );
 
             services.AddScoped<IAuthentication, SeguridadRepository>();
-            services.AddScoped<IEmpleado, Repository>();
+            services.AddScoped<IEmpleado, Features.Empleado.Repository>();
             services.AddScoped<IRevisionPermisos, Features.RevisionPermisos.Repository>();
             services.AddScoped<IPermisos, Features.Permisos.Repository>();
             services.AddScoped<IQRService, QRService>();
+            services.AddScoped<ICorteTiempo, Features.Permisos.CorteTiempo.Repository>();
+            services.AddScoped<IPermisoEconomico, Features.Permisos.PermisoEconomico.Repository>();
         }
     }
 }

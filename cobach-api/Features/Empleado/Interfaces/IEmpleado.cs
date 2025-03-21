@@ -7,5 +7,6 @@ namespace cobach_api.Features.Empleado.Interfaces
         Task<InformacionGeneralResponse> ObtenerInformacionGeneral();
         Task<FondoAhorroResponse?> ObtenerFondoAhorro();
         Task<List<Application.Dtos.Empleado.FondoAhorroHistorial>> ObtenerFondoAhorroHistorial(int idRegistro);
+        Task<List<int>> ObtenerCentrosDeTrabajo();
     }
 }

@@ -4,13 +4,13 @@ using cobach_api.Persistence;
 using cobach_api.Wrappers;
 using MediatR;
 
-namespace cobach_api.Features.Permisos
+namespace cobach_api.Features.Permisos.CorteTiempo
 {
-    public class PermisoEconomicoAgregar
+    public class CorteTiempoAgregar
     {
-        public record Request(int CentroDeTrabajoId, string Comentario, string ComentarioDias, DateTime FechaSolicitud, int LapsoDias, bool ConGoce, int? TurnoCentroTrabajoId = null)
+        public record Request(int CentroDeTrabajoId, string Comentario, DateTime FechaSolicitud, DateTime HoraSalida, int TiempoEstimado, bool Comprobo, int? TurnoCentroTrabajoId = null)
             : IRequest<ApiResponse<Response>>;
-        public record Response(int PermisoId);
+        public record Response(int CorteID);
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
@@ -21,28 +21,27 @@ namespace cobach_api.Features.Permisos
                 _context = context;
                 _user = user;
             }
-
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
             {
-                Persistence.Models.PermisoEconomico permiso = new()
+                Persistence.Models.CorteTiempo corteTiempo = new()
                 {
                     EmpleadoId = _user.GetCurrentUser(),
-                    PermisoLaboralId = (int)TipoPermisosLaborales.PermisoEconomico,
+                    PermisoLaboralId = (int)TipoPermisosLaborales.CorteTiempo,
                     CentroDeTrabajoId = request.CentroDeTrabajoId,
                     TurnoCentroTrabajoId = request.TurnoCentroTrabajoId,
-                    FechaRegistro = DateTime.Now,
                     FechaSolicitud = request.FechaSolicitud,
-                    LapsoPermisoDiasHabiles = request.LapsoDias,
+                    TiempoEstimado = request.TiempoEstimado,
                     Comentario = request.Comentario,
-                    ComentarioDias = request.ComentarioDias,
-                    ConGoceSueldo = request.ConGoce,
+                    HoraSalida = request.HoraSalida,
+                    Comprobo = request.Comprobo,
+                    FechaRegisto = DateTime.Now,
                     EstatusPermiso = 0
                 };
 
-                _context.PermisoEconomicos.Add(permiso);
+                _context.CorteTiempos.Add(corteTiempo);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                return new ApiResponse<Response>(new Response(permiso.Id));
+                return new ApiResponse<Response>(new Response(corteTiempo.Id));
             }
         }
     }

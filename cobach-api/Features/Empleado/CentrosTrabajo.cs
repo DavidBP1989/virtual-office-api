@@ -38,8 +38,9 @@ namespace cobach_api.Features.Empleado
                             c.CentroDeTrabajoId,
                             c.Clave,
                             c.Nombre,
-                            c.DomicilioLocalidad
-                        }).Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) && x.Status == 1)
+                            c.DomicilioLocalidad,
+                            t.StatusBorrado
+                        }).Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) && x.Status == 1 && x.StatusBorrado == 0)
                         .Select(s => new Response
                         {
                             CentroDeTrabajoId = s.CentroDeTrabajoId,

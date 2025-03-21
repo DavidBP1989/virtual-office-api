@@ -2,9 +2,8 @@
 using cobach_api.Persistence;
 using cobach_api.Wrappers;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
-namespace cobach_api.Features.Permisos
+namespace cobach_api.Features.Permisos.CorteTiempo
 {
     public class CorteTiempoActualizar
     {
@@ -25,17 +24,17 @@ namespace cobach_api.Features.Permisos
             {
                 var corteTiempo = await _context.CorteTiempos.FindAsync(new object?[] { request.CorteId }, cancellationToken: cancellationToken);
 
-                if(corteTiempo is null)
+                if (corteTiempo is null)
                     return new ApiResponse<Response>("El registro no existe.");
 
-                if(corteTiempo.EstatusPermiso == 2 || corteTiempo.EstatusPermiso == 3)
+                if (corteTiempo.EstatusPermiso == 2 || corteTiempo.EstatusPermiso == 3)
                     return new ApiResponse<Response>("El registro no se puede actualizar por que su estatus es: " + corteTiempo.EstatusPermiso);
 
                 corteTiempo.CentroDeTrabajoId = request.CentroDeTrabajoId;
                 corteTiempo.Comentario = request.Comentario;
                 corteTiempo.FechaSolicitud = request.FechaSolicitud;
                 corteTiempo.HoraSalida = request.HoraSalida;
-                corteTiempo.TiempoEstimado= request.TiempoEstimado;
+                corteTiempo.TiempoEstimado = request.TiempoEstimado;
                 corteTiempo.TurnoCentroTrabajoId = request.TurnoCentroTrabajoId;
                 corteTiempo.EstatusPermiso = 0;
 

@@ -4,5 +4,6 @@
     {
         Task<Dictionary<string, string>> GetCorteTiempoToDownload(int permissionId);
         Task<Dictionary<string, string>> GetPermisoEconomicoDownload(int permissionId);
+        Task<bool> PermiteAutorizarTodo();
     }
 }

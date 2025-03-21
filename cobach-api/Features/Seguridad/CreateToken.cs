@@ -8,7 +8,7 @@ namespace cobach_api.Features.Seguridad
     public class CreateToken
     {
         public record Request(string User, string Password) : IRequest<ApiResponse<Response>>;
-        public record Response(string Token, bool FirstTimeLogin, bool AllowConfirmWorkPermits);
+        public record Response(string Token, bool FirstTimeLogin, bool AllowConfirmWorkPermits, bool ConfirmedAsCampus, bool ShowHistory);
         
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
@@ -28,7 +28,9 @@ namespace cobach_api.Features.Seguridad
                 var config = await _authentication.GetUserConfig(request.User);
                 string token = _jwtProvider.Generate((config.UserId, request.User));
 
-                return new ApiResponse<Response>(new Response(token, config.FirstTimeLogin, config.AllowConfirmWorkPermits));
+                return new ApiResponse<Response>(
+                    new Response(token, config.FirstTimeLogin, config.AllowConfirmWorkPermits, config.ConfirmedAsCampus, config.ShowHistory)
+                );
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using cobach_api.Application.Dtos.Seguridad;
-using cobach_api.Features.Common.Enums;
 using cobach_api.Features.Seguridad.Interfaces;
 using cobach_api.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,18 @@ namespace cobach_api.Features.Seguridad
                     UserId = u.EmpleadoId
                 }).FirstAsync();
 
-            result.AllowConfirmWorkPermits = await _context.AutorizacionSolicitudes.AnyAsync(x => x.Autoriza1 == result.UserId || x.Autoriza2 == result.UserId);
+            var allowConfirmWorkPermits = await _context.AutorizacionSolicitudes.AnyAsync(x => x.Autoriza1 == result.UserId || x.Autoriza2 == result.UserId);
+            result.AllowConfirmWorkPermits = allowConfirmWorkPermits;
+
+            var confirmedAsCampus = await _context.AutorizacionSolicitudes
+                .Join(_context.CmcatalogoProyectos, a => a.IdProyecto, b => b.IdCatalogoProyecto, (a, b) => new { a.Autoriza1, b.ClaveProyecto })
+                .AnyAsync(x => x.ClaveProyecto.StartsWith("02") && x.Autoriza1 == result.UserId);
+
+            result.ShowHistory = await _context.AutorizacionSolicitudes
+                .AnyAsync(x => x.AutorizaPermiso == result.UserId || (allowConfirmWorkPermits && confirmedAsCampus));
+
+            result.ConfirmedAsCampus = confirmedAsCampus;
+
             return result;
         }
 

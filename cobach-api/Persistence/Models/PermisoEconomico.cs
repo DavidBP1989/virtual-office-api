@@ -34,4 +34,6 @@ public partial class PermisoEconomico
     public string? EstatusFirma { get; set; }
 
     public string? MotivoRechazo { get; set; }
+
+    public string? MotivoEliminacion { get; set; }
 }

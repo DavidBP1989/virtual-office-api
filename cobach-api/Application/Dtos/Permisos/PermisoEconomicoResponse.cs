@@ -4,10 +4,16 @@
     {
         public int? PermisosLimite { get; set; }
         public int? PermisosAceptados { get; set; }
-        public List<PermisoEconomicoList> Permisos { get; set; } = null!;
+        public List<PermisoEconomicoPorCentroDeTrabajo> PermisoEconomicoPorCentroDeTrabajo { get; set; } = null!;
     }
 
-    public class PermisoEconomicoList
+    public class PermisoEconomicoPorCentroDeTrabajo
+    {
+        public string? CentroDeTrabajo { get; set; } = null!;
+        public List<PermisoEconomico> PermisoEconomicos { get; set; } = null!;
+    }
+
+    public class PermisoEconomico
     {
         public int Id { get; set; }
         public string? EmpleadoId { get; set; }

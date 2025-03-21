@@ -6,10 +6,10 @@ using MediatR;
 
 namespace cobach_api.Features.RevisionPermisos
 {
-    public class ConfirmarPermiso
+    public class EliminarPermiso
     {
-        public record Request(TipoPermisosLaborales TypeWorkPermit, int WorkPermitId, int RealTime, bool IsssteJustification) : IRequest<ApiResponse<Response>>;
-        public record Response(int WorkPermitId);
+        public record Request(TipoPermisosLaborales TypeWorkPermit, int WorkPermitId, string Motivo) : IRequest<ApiResponse<Response>>;
+        public record Response();
 
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
@@ -21,10 +21,13 @@ namespace cobach_api.Features.RevisionPermisos
 
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
             {
-                bool status = await _revisionPermisos.AutorizarPermisoLaboral(request.TypeWorkPermit, request.WorkPermitId, request.RealTime, request.IsssteJustification);
-                if (!status) throw new ApiException("Error al intentar confirmar el permiso");
+                bool status;
+                if (string.IsNullOrEmpty(request.Motivo)) status = await _revisionPermisos.EliminarPermisoLaboral(request.TypeWorkPermit, request.WorkPermitId);
+                else status = await _revisionPermisos.EliminarPermisoLaboral(request.TypeWorkPermit, request.WorkPermitId, request.Motivo);
 
-                return new ApiResponse<Response>(new Response(request.WorkPermitId));
+                if (!status) throw new ApiException("Error al intentar elminar el estatus");
+
+                return new ApiResponse<Response>(new Response());
             }
         }
     }

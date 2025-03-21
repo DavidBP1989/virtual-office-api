@@ -34,6 +34,12 @@ namespace cobach_api.Features.RevisionPermisos
             return Ok(await _mediator.Send(request));
         }
 
+        [HttpPost("eliminar-permiso")]
+        public async Task<IActionResult> EliminarPermiso(EliminarPermiso.Request request)
+        {
+            return Ok(await _mediator.Send(request));
+        }
+
         [HttpPost("confirmar-permiso")]
         public async Task<IActionResult> ConfirmarPermiso(ConfirmarPermiso.Request request)
         {

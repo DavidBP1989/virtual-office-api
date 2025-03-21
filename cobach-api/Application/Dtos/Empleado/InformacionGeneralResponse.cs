@@ -1,4 +1,6 @@
-﻿namespace cobach_api.Application.Dtos.Empleado
+﻿using System.Text.Json.Serialization;
+
+namespace cobach_api.Application.Dtos.Empleado
 {
     public class InformacionGeneralResponse
     {
@@ -51,6 +53,7 @@
             public string TipoEmpleado { get; set; } = null!;
             public DateTime FechaIngreso { get; set; }
             public bool Sindicalizado { get; set; }
+            [JsonIgnore] public int IdPlaza { get; set; }
             public string Plaza { get; set; } = null!;
             public string ConCaracter { get; set; } = null!;
             public string? DenominacionPlaza { get; set; }

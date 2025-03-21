@@ -3,6 +3,7 @@ using cobach_api.Features.Common.Enums;
 using cobach_api.Features.RevisionPermisos.Interfaces;
 using cobach_api.Infrastructure.Interfaces;
 using cobach_api.Persistence;
+using cobach_api.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace cobach_api.Features.RevisionPermisos
@@ -39,8 +40,12 @@ namespace cobach_api.Features.RevisionPermisos
                 if (corteTiempo is null)
                     return false;
 
-                int? proyectoId = _context.InformacionLaborals.First(x => x.EmpleadoId == corteTiempo.EmpleadoId)?.IdCatalogoProyecto;
+                int? proyectoId = _context.InformacionLaborals.First(x => x.EmpleadoId == corteTiempo.EmpleadoId && x.StatusBorrado == 0 && x.TurnoxCentroDeTrabajoId == corteTiempo.TurnoCentroTrabajoId)?.IdCatalogoProyecto;
                 var statusFirma = StatusFirma(proyectoId.GetValueOrDefault());
+                if (statusFirma == PermisoStatusFirma.SinAutorizacion)
+                {
+                    return false;
+                }
                 int statusPermiso = statusFirma == PermisoStatusFirma.AutorizaAmbasFirmas ? 2 : (int)statusFirma;
 
                 corteTiempo.EstatusPermiso = statusPermiso;
@@ -54,8 +59,12 @@ namespace cobach_api.Features.RevisionPermisos
                 if (permisoEconomico is null)
                     return false;
 
-                int? proyectoId = _context.InformacionLaborals.First(x => x.EmpleadoId == permisoEconomico.EmpleadoId)?.IdCatalogoProyecto;
+                int? proyectoId = _context.InformacionLaborals.First(x => x.EmpleadoId == permisoEconomico.EmpleadoId && x.StatusBorrado == 0 && x.TurnoxCentroDeTrabajoId == permisoEconomico.TurnoCentroTrabajoId)?.IdCatalogoProyecto;
                 var statusFirma = StatusFirma(proyectoId.GetValueOrDefault());
+                if (statusFirma == PermisoStatusFirma.SinAutorizacion)
+                {
+                    return false;
+                }
                 int statusPermiso = statusFirma == PermisoStatusFirma.AutorizaAmbasFirmas ? 2 : (int)statusFirma;
 
                 permisoEconomico.EstatusPermiso = statusPermiso;
@@ -87,14 +96,17 @@ namespace cobach_api.Features.RevisionPermisos
                     e.SegundoApellido
                 })
                 .Join(_context.InformacionLaborals, cte => cte.EmpleadoId, i => i.EmpleadoId, (cte, i) => new { cte, i })
+                .Join(_context.TurnosxCentrosDeTrabajos, t => t.i.TurnoxCentroDeTrabajoId, tct => tct.TurnoxCentroDeTrabajoId, (cte, tct) => new { cte, tct })
                 .Where(
-                    x => proyecto.ProyectoId == x.i.IdCatalogoProyecto &&
-                    x.cte.ct.EstatusPermiso == proyecto.EstatusPermiso
+                    x => proyecto.ProyectoId == x.cte.i.IdCatalogoProyecto &&
+                    x.cte.cte.ct.CentroDeTrabajoId == x.tct.CentroDeTrabajoId &&
+                    x.cte.cte.ct.TurnoCentroTrabajoId == x.cte.i.TurnoxCentroDeTrabajoId &&
+                    x.cte.cte.ct.EstatusPermiso == proyecto.EstatusPermiso
                 )
                 .Select(x => new PermisoLaboral
                 {
-                    PermisoId = x.cte.ct.Id,
-                    Empleado = $"{x.cte.Nombres} {x.cte.PrimerApellido} {x.cte.SegundoApellido}",
+                    PermisoId = x.cte.cte.ct.Id,
+                    Empleado = $"{x.cte.cte.Nombres} {x.cte.cte.PrimerApellido} {x.cte.cte.SegundoApellido}",
                     CentroDeTrabajo =
                         _context.TurnosxCentrosDeTrabajos
                         .Join(_context.CentrosDeTrabajos, t => t.CentroDeTrabajoId, c => c.CentroDeTrabajoId, (t, c) => new
@@ -104,21 +116,21 @@ namespace cobach_api.Features.RevisionPermisos
                             c.Nombre,
                             c.Clave
                         })
-                        .Where(w => w.TurnoxCentroDeTrabajoId == x.cte.ct.TurnoCentroTrabajoId)
+                        .Where(w => w.TurnoxCentroDeTrabajoId == x.cte.cte.ct.TurnoCentroTrabajoId)
                         .Select(s =>
                             s.Clave.Substring(0, 2) == "03"
                             ? $"{s.Nombre.Substring(45, 10)}, {(s.Turno == 0 ? "TM" : "TV")}"
                             : $"{s.Nombre}, {(s.Turno == 0 ? "TM" : "TV")}"
                         )
                         .FirstOrDefault(),
-                    FechaRegisto = x.cte.ct.FechaRegisto.GetValueOrDefault(),
-                    FechaSolicitud = x.cte.ct.FechaSolicitud.GetValueOrDefault(),
-                    HoraSalida = x.cte.ct.HoraSalida.GetValueOrDefault(),
-                    TiempoEstimado = x.cte.ct.TiempoEstimado.GetValueOrDefault(),
-                    Comentario = x.cte.ct.Comentario,
-                    Estatus = x.cte.ct.EstatusPermiso.GetValueOrDefault(),
+                    FechaRegisto = x.cte.cte.ct.FechaRegisto.GetValueOrDefault(),
+                    FechaSolicitud = x.cte.cte.ct.FechaSolicitud.GetValueOrDefault(),
+                    HoraSalida = x.cte.cte.ct.HoraSalida.GetValueOrDefault(),
+                    TiempoEstimado = x.cte.cte.ct.TiempoEstimado.GetValueOrDefault(),
+                    Comentario = x.cte.cte.ct.Comentario,
+                    Estatus = x.cte.cte.ct.EstatusPermiso.GetValueOrDefault(),
                     TiempoReal = _context.CorteTiempos
-                        .Where(w => w.EmpleadoId == x.cte.EmpleadoId && w.EstatusPermiso == (int)EstatusPermisos.Confirmado)
+                        .Where(w => w.EmpleadoId == x.cte.cte.EmpleadoId && w.EstatusPermiso == (int)EstatusPermisos.Confirmado && w.Comprobo.HasValue && !w.Comprobo.Value)
                         .Select(s => s.TiempoReal)
                         .Sum(),
                     TiempoLimite = _context.CatalogoPermisosLaborales
@@ -136,14 +148,17 @@ namespace cobach_api.Features.RevisionPermisos
                         e.SegundoApellido
                     })
                     .Join(_context.InformacionLaborals, pee => pee.EmpleadoId, i => i.EmpleadoId, (pee, i) => new { pee, i })
+                    .Join(_context.TurnosxCentrosDeTrabajos, t => t.i.TurnoxCentroDeTrabajoId, tct => tct.TurnoxCentroDeTrabajoId, (cte, tct) => new { cte, tct })
                     .Where(x =>
-                        proyecto.ProyectoId == x.i.IdCatalogoProyecto &&
-                        x.pee.pe.EstatusPermiso == proyecto.EstatusPermiso
+                        proyecto.ProyectoId == x.cte.i.IdCatalogoProyecto &&
+                        x.cte.pee.pe.CentroDeTrabajoId == x.tct.CentroDeTrabajoId &&
+                        x.cte.pee.pe.TurnoCentroTrabajoId == x.cte.i.TurnoxCentroDeTrabajoId &&
+                        x.cte.pee.pe.EstatusPermiso == proyecto.EstatusPermiso
                     )
                     .Select(x => new PermisoLaboral
                     {
-                        PermisoId = x.pee.pe.Id,
-                        Empleado = $"{x.pee.Nombres} {x.pee.PrimerApellido} {x.pee.SegundoApellido}",
+                        PermisoId = x.cte.pee.pe.Id,
+                        Empleado = $"{x.cte.pee.Nombres} {x.cte.pee.PrimerApellido} {x.cte.pee.SegundoApellido}",
                         CentroDeTrabajo =
                             _context.TurnosxCentrosDeTrabajos
                             .Join(_context.CentrosDeTrabajos, t => t.CentroDeTrabajoId, c => c.CentroDeTrabajoId, (t, c) => new
@@ -153,22 +168,22 @@ namespace cobach_api.Features.RevisionPermisos
                                 c.Nombre,
                                 c.Clave
                             })
-                            .Where(w => w.TurnoxCentroDeTrabajoId == x.pee.pe.TurnoCentroTrabajoId)
+                            .Where(w => w.TurnoxCentroDeTrabajoId == x.cte.pee.pe.TurnoCentroTrabajoId)
                             .Select(s =>
                                 s.Clave.Substring(0, 2) == "03"
                                 ? $"{s.Nombre.Substring(45, 10)}, {(s.Turno == 0 ? "TM" : "TV")}"
                                 : $"{s.Nombre}, {(s.Turno == 0 ? "TM" : "TV")}"
                             )
                             .FirstOrDefault(),
-                        FechaRegisto = x.pee.pe.FechaRegistro.GetValueOrDefault(),
-                        FechaSolicitud = x.pee.pe.FechaSolicitud.GetValueOrDefault(),
-                        Comentario = x.pee.pe.Comentario,
-                        Estatus = x.pee.pe.EstatusPermiso.GetValueOrDefault(),
-                        LapsoPermisoDiasHabiles = x.pee.pe.LapsoPermisoDiasHabiles,
-                        ComentarioDias = x.pee.pe.ComentarioDias ?? "",
-                        ConGoceSueldo = x.pee.pe.ConGoceSueldo,
+                        FechaRegisto = x.cte.pee.pe.FechaRegistro.GetValueOrDefault(),
+                        FechaSolicitud = x.cte.pee.pe.FechaSolicitud.GetValueOrDefault(),
+                        Comentario = x.cte.pee.pe.Comentario,
+                        Estatus = x.cte.pee.pe.EstatusPermiso.GetValueOrDefault(),
+                        LapsoPermisoDiasHabiles = x.cte.pee.pe.LapsoPermisoDiasHabiles,
+                        ComentarioDias = x.cte.pee.pe.ComentarioDias ?? "",
+                        ConGoceSueldo = x.cte.pee.pe.ConGoceSueldo,
                         DiasReales = _context.PermisoEconomicos
-                            .Where(w => w.EmpleadoId == x.pee.EmpleadoId && w.EstatusPermiso == (int)EstatusPermisos.Confirmado)
+                            .Where(w => w.EmpleadoId == x.cte.pee.EmpleadoId && w.EstatusPermiso == (int)EstatusPermisos.Confirmado)
                             .Select(s => s.LapsoPermisoDiasHabiles)
                             .Sum(),
                         TiempoLimite = _context.CatalogoPermisosLaborales
@@ -203,21 +218,18 @@ namespace cobach_api.Features.RevisionPermisos
                 });
             }
 
-            bool authorizePermissions = _context.AutorizacionSolicitudes.Any(x => x.AutorizaPermiso == _user.GetCurrentUser());
-            if (authorizePermissions)
-            {
-                workPermits.AddRange(await _context.AutorizacionSolicitudes
-                    .Select(x => new AutorizacionProyectos
-                    {
-                        ProyectoId = x.IdProyecto,
-                        EstatusPermiso = 2
-                    }).ToListAsync());
-            }
+            workPermits.AddRange(await _context.AutorizacionSolicitudes
+                .Where(x => x.AutorizaPermiso == _user.GetCurrentUser())
+                .Select(x => new AutorizacionProyectos
+                {
+                    ProyectoId = x.IdProyecto,
+                    EstatusPermiso = 2
+                }).ToListAsync());
 
             return workPermits;
         }
 
-        public async Task<bool> AutorizarPermisoLaboral(TipoPermisosLaborales tipoPermiso, int permisoLaboralId, int tiempoReal)
+        public async Task<bool> AutorizarPermisoLaboral(TipoPermisosLaborales tipoPermiso, int permisoLaboralId, int tiempoReal, bool justificanteISSSTE)
         {
             bool result = false;
             if (tipoPermiso == TipoPermisosLaborales.CorteTiempo)
@@ -228,6 +240,7 @@ namespace cobach_api.Features.RevisionPermisos
 
                 corteTiempo.EstatusPermiso = (int)EstatusPermisos.Confirmado;
                 corteTiempo.TiempoReal = tiempoReal;
+                corteTiempo.Comprobo = justificanteISSSTE;
                 corteTiempo.EstatusFirma = _user.GetCurrentUser();
                 _context.Update(corteTiempo);
                 result = await _context.SaveChangesAsync() > 0;
@@ -256,7 +269,7 @@ namespace cobach_api.Features.RevisionPermisos
                 if (corteTiempo is null)
                     return false;
 
-                corteTiempo.EstatusPermiso = (int)EstatusPermisos.Rechazado; ;
+                corteTiempo.EstatusPermiso = (int)EstatusPermisos.Rechazado;
                 corteTiempo.MotivoRechazo = motivo;
                 corteTiempo.EstatusFirma = _user.GetCurrentUser();
                 _context.Update(corteTiempo);
@@ -272,6 +285,61 @@ namespace cobach_api.Features.RevisionPermisos
                 permisoEconomico.MotivoRechazo = motivo;
                 permisoEconomico.EstatusFirma = _user.GetCurrentUser();
                 _context.Update(permisoEconomico);
+                result = await _context.SaveChangesAsync() > 0;
+            }
+
+            return result;
+        }
+
+        public async Task<bool> EliminarPermisoLaboral(TipoPermisosLaborales tipoPermiso, int permisoLaboralId, string motivo)
+        {
+            bool result = false;
+            if (tipoPermiso == TipoPermisosLaborales.CorteTiempo)
+            {
+                var corteTiempo = await _context.CorteTiempos.FindAsync(permisoLaboralId);
+                if (corteTiempo is null)
+                    return false;
+
+                corteTiempo.MotivoEliminacion = motivo;
+                corteTiempo.EstatusPermiso = (int)EstatusPermisos.Eliminado;
+                _context.Update(corteTiempo);
+                result = await _context.SaveChangesAsync() > 0;
+            }
+            else if (tipoPermiso == TipoPermisosLaborales.PermisoEconomico)
+            {
+                var permisoEconomico = await _context.PermisoEconomicos.FindAsync(permisoLaboralId);
+                if (permisoEconomico is null)
+                    return false;
+
+                permisoEconomico.MotivoEliminacion = motivo;
+                permisoEconomico.EstatusPermiso = (int)EstatusPermisos.Eliminado;
+                result = await _context.SaveChangesAsync() > 0;
+            }
+            
+            return result;
+        }
+
+        public async Task<bool> EliminarPermisoLaboral(TipoPermisosLaborales tipoPermiso, int permisoLaboralId)
+        {
+            bool result = false;
+            if (tipoPermiso == TipoPermisosLaborales.CorteTiempo)
+            {
+                var corteTiempo = await _context.CorteTiempos.FindAsync(permisoLaboralId);
+                if (corteTiempo is null)
+                    return false;
+
+                _context.Attach(corteTiempo);
+                _context.Remove(corteTiempo);
+                result = await _context.SaveChangesAsync() > 0;
+            }
+            else if (tipoPermiso == TipoPermisosLaborales.PermisoEconomico)
+            {
+                var permisoEconomico = await _context.PermisoEconomicos.FindAsync(permisoLaboralId);
+                if (permisoEconomico is null)
+                    return false;
+
+                _context.Attach(permisoEconomico);
+                _context.Remove(permisoEconomico);
                 result = await _context.SaveChangesAsync() > 0;
             }
 

@@ -24,6 +24,8 @@ public partial class SiiaContext : DbContext
 
     public virtual DbSet<CatalogoPlazasAdministrativa> CatalogoPlazasAdministrativas { get; set; }
 
+    public virtual DbSet<CatalogoPlazasDocente> CatalogoPlazasDocentes { get; set; }
+
     public virtual DbSet<CentrosDeTrabajo> CentrosDeTrabajos { get; set; }
 
     public virtual DbSet<CmcatalogoProyecto> CmcatalogoProyectos { get; set; }
@@ -73,8 +75,6 @@ public partial class SiiaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.UseCollation("Modern_Spanish_CI_AI");
-
         modelBuilder.Entity<AutorizacionSolicitude>(entity =>
         {
             entity.HasKey(e => e.IdProyecto);
@@ -157,6 +157,37 @@ public partial class SiiaContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("tipoAdministrativo");
+        });
+
+        modelBuilder.Entity<CatalogoPlazasDocente>(entity =>
+        {
+            entity.HasKey(e => e.CatalogoPlazasDocentesId);
+
+            entity.ToTable("catalogoPlazasDocentes");
+
+            entity.Property(e => e.CatalogoPlazasDocentesId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("catalogoPlazasDocentesId");
+            entity.Property(e => e.ClavePlazaDocente)
+                .HasMaxLength(9)
+                .IsUnicode(false)
+                .HasColumnName("clavePlazaDocente");
+            entity.Property(e => e.CostoHf).HasColumnName("costoHF");
+            entity.Property(e => e.CostoHsm).HasColumnName("costoHSM");
+            entity.Property(e => e.CostoHsmsindicalizado).HasColumnName("costoHSMSindicalizado");
+            entity.Property(e => e.DescripcionPlazaDocente)
+                .HasMaxLength(11)
+                .IsUnicode(false)
+                .HasColumnName("descripcionPlazaDocente");
+            entity.Property(e => e.Ejercicio)
+                .HasMaxLength(4)
+                .IsUnicode(false)
+                .HasColumnName("ejercicio");
+            entity.Property(e => e.HorasFederales).HasColumnName("horasFederales");
+            entity.Property(e => e.TipoDocente)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("tipoDocente");
         });
 
         modelBuilder.Entity<CentrosDeTrabajo>(entity =>
@@ -266,6 +297,7 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.HoraSalida)
                 .HasColumnType("datetime")
                 .HasColumnName("horaSalida");
+            entity.Property(e => e.MotivoEliminacion).HasColumnName("motivoEliminacion");
             entity.Property(e => e.MotivoRechazo).HasColumnName("motivoRechazo");
             entity.Property(e => e.PermisoLaboralId).HasColumnName("permisoLaboralId");
             entity.Property(e => e.TiempoEstimado).HasColumnName("tiempoEstimado");
@@ -275,10 +307,6 @@ public partial class SiiaContext : DbContext
 
         modelBuilder.Entity<Documento>(entity =>
         {
-            entity.HasIndex(e => e.EmpleadoId, "IX_FK_EmpleadoDocumento");
-
-            entity.HasIndex(e => e.TipoDocumentoId, "IX_FK_TipoDocumentoDocumento");
-
             entity.Property(e => e.DocumentoId)
                 .HasMaxLength(128)
                 .HasDefaultValueSql("(newid())");
@@ -309,12 +337,6 @@ public partial class SiiaContext : DbContext
         modelBuilder.Entity<Empleado>(entity =>
         {
             entity.HasKey(e => e.EmpleadoId).HasName("PK_Empleados_1");
-
-            entity.HasIndex(e => e.DocumentacionCurp, "IX_Empleados_UniqueCurp").IsUnique();
-
-            entity.HasIndex(e => new { e.PrimerApellido, e.SegundoApellido, e.Nombres, e.DocumentacionCurp }, "IX_Empleados_UniqueEmplado").IsUnique();
-
-            entity.HasIndex(e => e.NumeroEmpleado, "IX_Empleados_UniqueNumeroEmpleado").IsUnique();
 
             entity.Property(e => e.EmpleadoId)
                 .HasMaxLength(128)
@@ -651,6 +673,11 @@ public partial class SiiaContext : DbContext
             entity.Property(e => e.IdCatalogoProyecto).HasColumnName("idCatalogoProyecto");
             entity.Property(e => e.IdPlaza).HasColumnName("idPlaza");
             entity.Property(e => e.MotivoBaja).HasMaxLength(500);
+            entity.Property(e => e.Status).HasComment("Valores numéricos para tipos de baja, desde jubilacion, renuncia, deceso o simple baja");
+            entity.Property(e => e.StatusBorrado)
+                .HasComment("Campo para aplicar un borrado lógico. 0 = activo 1 = Borrado logico")
+                .HasColumnName("statusBorrado");
+            entity.Property(e => e.SubCaracter).HasComment("0.-DEFINITIVO\r\n1.-INTERINO\r\n2.-TIEMPO DETERMINADO\r\n3.-TIEMPO INDETERMINADO");
             entity.Property(e => e.TipoEmpleado).HasComment("1.-Administrativo\r\n2.-Docente");
 
             entity.HasOne(d => d.Empleado).WithMany(p => p.InformacionLaborals)
@@ -706,7 +733,7 @@ public partial class SiiaContext : DbContext
 
         modelBuilder.Entity<PermisoEconomico>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PermisoE__3213E83FF1779EB4");
+            entity.HasKey(e => e.Id).HasName("PK__PermisoE__3213E83FD0CC8248");
 
             entity.ToTable("PermisoEconomico");
 
@@ -732,6 +759,7 @@ public partial class SiiaContext : DbContext
                 .HasColumnType("smalldatetime")
                 .HasColumnName("fechaSolicitud_final");
             entity.Property(e => e.LapsoPermisoDiasHabiles).HasColumnName("lapsoPermisoDiasHabiles");
+            entity.Property(e => e.MotivoEliminacion).HasColumnName("motivoEliminacion");
             entity.Property(e => e.MotivoRechazo).HasColumnName("motivoRechazo");
             entity.Property(e => e.PermisoLaboralId).HasColumnName("permisoLaboralId");
             entity.Property(e => e.TurnoCentroTrabajoId).HasColumnName("turnoCentroTrabajoId");
@@ -768,8 +796,6 @@ public partial class SiiaContext : DbContext
             entity.HasKey(e => e.TurnoxCentroDeTrabajoId);
 
             entity.ToTable("TurnosxCentrosDeTrabajo");
-
-            entity.HasIndex(e => e.CentroDeTrabajoId, "IX_FK_CentroDeTrabajoTurnoxCentroDeTrabajo");
         });
 
         OnModelCreatingPartial(modelBuilder);
