@@ -7,6 +7,7 @@
         EnProcesoFirmante2, // 2
         Rechazado, //3
         Confirmado, //4
-        Eliminado //5
+        Eliminado, //5
+        Especial // 6
     }
 }
