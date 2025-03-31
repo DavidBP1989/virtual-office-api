@@ -15,9 +15,11 @@ namespace cobach_api.Features.Permisos.PermisoEconomicoEspecial
         public class CommandHandler : IRequestHandler<Request, ApiResponse<Response>>
         {
             readonly SiiaContext _context;
-            public CommandHandler(SiiaContext context)
+            readonly IUserService _user;
+            public CommandHandler(SiiaContext context, IUserService user)
             {
                 _context = context;
+                _user = user;
             }
 
             public async Task<ApiResponse<Response>> Handle(Request request, CancellationToken cancellationToken)
@@ -34,6 +36,7 @@ namespace cobach_api.Features.Permisos.PermisoEconomicoEspecial
                     Comentario = request.Comentario,
                     ComentarioDias = request.ComentarioDias,
                     ConGoceSueldo = request.ConGoce,
+                    EstatusFirma = _user.GetCurrentUser(),
                     EstatusPermiso = 6
                 };
 
