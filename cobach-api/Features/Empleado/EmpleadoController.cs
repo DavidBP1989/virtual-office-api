@@ -46,7 +46,14 @@ namespace cobach_api.Features.Empleado
         [HttpGet("centros-trabajo")]
         public async Task<IActionResult> CentrosTrabajo()
         {
-            var req = new CentrosTrabajo.Request();
+            var req = new CentrosTrabajo.Request(-1);
+            return Ok(await _mediator.Send(req));
+        }
+
+        [HttpGet("centros-trabajo-por-empleado")]
+        public async Task<IActionResult> CentrosTrabajo(int empleadoId)
+        {
+            var req = new CentrosTrabajo.Request(empleadoId);
             return Ok(await _mediator.Send(req));
         }
 

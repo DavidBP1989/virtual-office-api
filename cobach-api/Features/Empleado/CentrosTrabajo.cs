@@ -12,7 +12,7 @@ namespace cobach_api.Features.Empleado
 {
     public class CentrosTrabajo
     {
-        public record Request : IRequest<ApiResponse<List<Response>>>;
+        public record Request(int EmpleadoId) : IRequest<ApiResponse<List<Response>>>;
         public class Response : CentrosTrabajoResponse { }
         public class CommandHandler : IRequestHandler<Request, ApiResponse<List<Response>>>
         {
@@ -40,7 +40,7 @@ namespace cobach_api.Features.Empleado
                             c.Nombre,
                             c.DomicilioLocalidad,
                             t.StatusBorrado
-                        }).Where(x => x.EmpleadoId.Equals(_user.GetCurrentUser()) && x.Status == 1 && x.StatusBorrado == 0)
+                        }).Where(x => x.EmpleadoId.Equals(request.EmpleadoId == -1 ? _user.GetCurrentUser() : request.EmpleadoId) && x.Status == 1 && x.StatusBorrado == 0)
                         .Select(s => new Response
                         {
                             CentroDeTrabajoId = s.CentroDeTrabajoId,
