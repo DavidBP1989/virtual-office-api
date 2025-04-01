@@ -33,7 +33,7 @@ namespace cobach_api.Features.Permisos.PermisoEconomico
                     .First(x => x.Id == (int)TipoPermisosLaborales.PermisoEconomico && x.Activo.HasValue && x.Activo.Value)
                     ?.TiempoPermitido,
                 PermisosAceptados = pe
-                    .Where(x => x.EstatusPermiso == (int)EstatusPermisos.Confirmado && x.EstatusPermiso == (int)EstatusPermisos.Especial)
+                    .Where(x => x.EstatusPermiso == (int)EstatusPermisos.Confirmado || x.EstatusPermiso == (int)EstatusPermisos.Especial)
                     .Select(s  => s.LapsoPermisoDiasHabiles)
                     .DefaultIfEmpty(0)
                     .Sum(),
